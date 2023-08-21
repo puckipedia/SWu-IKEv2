@@ -2337,8 +2337,13 @@ class swu():
                                         print('KAUT',toHex(self.KAUT))
                                         print('MSK',toHex(self.MSK))
                                         print('EMSK',toHex(self.EMSK))
-                                        
-                                        eap_payload_response = bytes([2]) + bytes([self.eap_identifier]) + fromHex('00281701000003030040') + self.RES + fromHex('0b050000' + 16*'00')
+                                        eap_payload_response = bytearray(bytes([2]) + bytes([self.eap_identifier]) + fromHex('00001701000003000000') + self.RES + fromHex('0b050000' + 16*'00'))
+                                        eap_payload_response[9]  = (len(self.RES) + 4) >> 2
+                                        eap_payload_response[10] = (len(self.RES) * 8) >> 8
+                                        eap_payload_response[11] = (len(self.RES) * 8) & 0xFF
+                                        eap_payload_response[2] = len(eap_payload_response) >> 8
+                                        eap_payload_response[3] = len(eap_payload_response) & 0xFF
+                                        eap_payload_response = bytes(eap_payload_response)
                                         
                                         h = hmac.HMAC(self.KAUT,hashes.SHA1())
                                         h.update(eap_payload_response)
